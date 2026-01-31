@@ -1,0 +1,46 @@
+services:
+  kometa-radarr-bridge:
+    image: python:3.12-slim
+    container_name: kometa-radarr-bridge
+    working_dir: /app
+    command: >
+      sh -c "pip install --no-cache-dir fastapi uvicorn httpx &&
+             uvicorn app:app --host 0.0.0.0 --port 7878"
+    volumes:
+      - ./app:/app
+    environment:
+      MODE: "radarr"
+      SHIM_API_KEY: "kometa-shim-key"   # Kometa will send this as X-Api-Key
+
+      OVERSEERR_URL: "http://overseerr.url:5055"
+      OVERSEERR_API_KEY: "YOUR_OVERSEERR_API_KEY"
+      OVERSEERR_USER_ID: "1"            # use a dedicated Overseerr 'Kometa' user id if you want clean tagging
+
+      TMDB_API_KEY: "TMDB_API_KEY"        # only needed for Sonarr mode, OK to keep here
+      DEFAULT_TV_SEASONS: "all"          # all|first
+    ports:
+      - "57878:7878"
+    restart: unless-stopped
+
+  kometa-sonarr-bridge:
+    image: python:3.12-slim
+    container_name: kometa-sonarr-bridge
+    working_dir: /app
+    command: >
+      sh -c "pip install --no-cache-dir fastapi uvicorn httpx &&
+             uvicorn app:app --host 0.0.0.0 --port 8989"
+    volumes:
+      - ./app:/app
+    environment:
+      MODE: "sonarr"
+      SHIM_API_KEY: "kometa-shim-key"
+
+      OVERSEERR_URL: "http://overseerr.url:5055"
+      OVERSEERR_API_KEY: "YOUR_OVERSEERR_API_KEY"
+      OVERSEERR_USER_ID: "1"
+
+      TMDB_API_KEY: "TMDB_API_KEY"
+      DEFAULT_TV_SEASONS: "all"
+    ports:
+      - "58989:8989"
+    restart: unless-stopped
