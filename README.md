@@ -18,8 +18,10 @@ radarr:                            # Can be individually specified per library a
 ```
 ## Quick Install
 ```
-# to clone from our github website
+# clone the repo
 git clone https://github.com/johnd010/kometa-overseerr-bridge.git ./
+
+# put up the container
 docker compose up -d
 ```
 
